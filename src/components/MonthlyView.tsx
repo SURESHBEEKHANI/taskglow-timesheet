@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTasks } from '@/contexts/TaskContext';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay } from 'date-fns';
+import MonthlyTaskList from '@/components/MonthlyTaskList';
 
 interface MonthlyViewProps {
   selectedDate: Date;
@@ -62,6 +63,8 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ selectedDate, onDateChange })
           );
         })}
       </div>
+
+      <MonthlyTaskList selectedDate={selectedDate} />
     </div>
   );
 };

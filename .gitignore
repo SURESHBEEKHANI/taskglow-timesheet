@@ -1,5 +1,13 @@
+# Node modules and build output
+node_modules/
+dist/
+build/
+out/
+coverage/
+*.tsbuildinfo
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,18 +15,55 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Local environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*.local
+.env.*
+!.env.example
 *.local
 
+# Ignore additional environment files
+.env.*
+
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
+.vscode/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Misc
+*.tgz
+*.bak
+*.tmp
+
+# Vite cache
+.vite/
+node_modules/.vite/
+
+# ESLint cache
+.eslintcache
+
+# NYC coverage output
+.nyc_output/
+
+# Netlify local state
+.netlify/
+
+# Transformers / HuggingFace caches
+.cache/
+.cache/hf/
+node_modules/@huggingface/transformers/.cache/
+
+# RAG pipeline artifacts
+src/rag-pipeline/ingestion-metadata.json

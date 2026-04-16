@@ -21,7 +21,7 @@ export interface Task {
   createdAt: string;
 }
 
-export type ViewMode = 'tasks' | 'daily' | 'monthly' | 'yearly' | 'analytics';
+export type ViewMode = 'tasks' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'analytics';
 
 export const CATEGORY_CONFIG: Record<TaskCategory, { label: string; emoji: string; color: string }> = {
   work: { label: 'Work', emoji: '🏢', color: 'hsl(var(--chart-4))' },

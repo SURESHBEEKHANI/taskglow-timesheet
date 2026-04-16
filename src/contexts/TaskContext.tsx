@@ -1,8 +1,14 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { Task } from '@/types/task';
+import { fetchTasksFromApi, saveTasksToApi } from '@/lib/taskApi';
 
 interface TaskContextType {
   tasks: Task[];
+  isLoading: boolean;
+  isSyncing: boolean;
+  storageMode: 'supabase' | 'local';
+  syncError: string | null;
+  lastSyncedAt: string | null;
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'completed' | 'timerStatus' | 'timerElapsed' | 'timerStartedAt'>) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
@@ -22,10 +28,66 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return stored ? JSON.parse(stored) : [];
     } catch { return []; }
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [storageMode, setStorageMode] = useState<'supabase' | 'local'>('local');
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadTasks = async () => {
+      setIsLoading(true);
+      try {
+        const remoteTasks = await fetchTasksFromApi();
+        if (mounted) {
+          setTasks(remoteTasks);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(remoteTasks));
+          setStorageMode('supabase');
+          setSyncError(null);
+          setLastSyncedAt(new Date().toISOString());
+        }
+      } catch (error) {
+        if (mounted) {
+          setStorageMode('local');
+          setSyncError(error instanceof Error ? error.message : 'Supabase unavailable');
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadTasks();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  }, [tasks]);
+    if (isLoading) {
+      return;
+    }
+
+    setIsSyncing(true);
+    saveTasksToApi(tasks)
+      .then(() => {
+        setStorageMode('supabase');
+        setSyncError(null);
+        setLastSyncedAt(new Date().toISOString());
+      })
+      .catch((error) => {
+        setStorageMode('local');
+        setSyncError(error instanceof Error ? error.message : 'Supabase sync failed');
+      })
+      .finally(() => {
+        setIsSyncing(false);
+      });
+  }, [isLoading, tasks]);
 
   const addTask = useCallback((task: Omit<Task, 'id' | 'createdAt' | 'completed' | 'timerStatus' | 'timerElapsed' | 'timerStartedAt'>) => {
     setTasks(prev => [{
@@ -89,7 +151,21 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask, toggleComplete, startTimer, pauseTimer, stopTimer }}>
+    <TaskContext.Provider value={{
+      tasks,
+      isLoading,
+      isSyncing,
+      storageMode,
+      syncError,
+      lastSyncedAt,
+      addTask,
+      updateTask,
+      deleteTask,
+      toggleComplete,
+      startTimer,
+      pauseTimer,
+      stopTimer,
+    }}>
       {children}
     </TaskContext.Provider>
   );

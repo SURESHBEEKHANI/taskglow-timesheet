@@ -40,7 +40,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ selectedDate }) => {
     );
   }
 
-  const cls = "bg-secondary text-secondary-foreground text-sm rounded-lg px-3 py-2 border-none outline-none focus:ring-2 focus:ring-primary/50 w-full";
+  const cls = "bg-secondary/90 text-secondary-foreground text-sm rounded-lg px-3 py-2 border border-border/70 outline-none focus:ring-2 focus:ring-primary/50 w-full";
 
   return (
     <form onSubmit={handleSubmit} className="glass-card rounded-xl p-5 animate-slide-up space-y-4">
@@ -51,17 +51,17 @@ const TaskForm: React.FC<TaskFormProps> = ({ selectedDate }) => {
       <input placeholder="Task name..." value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className={cls} autoFocus />
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value as TaskCategory }))} className={cls}>
-          <option value="work">🏢 Work</option>
-          <option value="study">📚 Study</option>
-          <option value="personal">👤 Personal</option>
+          <option value="work">Work</option>
+          <option value="study">Study</option>
+          <option value="personal">Personal</option>
         </select>
         <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value as TaskPriority }))} className={cls}>
-          <option value="important">🔴 Important</option>
-          <option value="not-important">⚪ Not Important</option>
+          <option value="important">Important</option>
+          <option value="not-important">Not Important</option>
         </select>
         <select value={form.urgency} onChange={e => setForm(f => ({ ...f, urgency: e.target.value as TaskUrgency }))} className={cls}>
-          <option value="urgent">⚡ Urgent</option>
-          <option value="not-urgent">🕐 Not Urgent</option>
+          <option value="urgent">Urgent</option>
+          <option value="not-urgent">Not Urgent</option>
         </select>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -82,7 +82,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ selectedDate }) => {
           <input type="time" value={form.actualEnd} onChange={e => setForm(f => ({ ...f, actualEnd: e.target.value }))} className={cls} />
         </div>
       </div>
-      <button type="submit" className="gradient-primary text-primary-foreground font-medium px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
+      <button type="submit" className="gradient-primary text-primary-foreground font-medium px-6 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-md shadow-primary/20">
         Add Task
       </button>
     </form>
