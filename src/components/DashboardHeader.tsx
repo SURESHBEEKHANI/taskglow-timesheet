@@ -1,12 +1,13 @@
 import React from 'react';
 import { ViewMode } from '@/types/task';
-import { CalendarDays, LayoutList, Calendar, BarChart3 } from 'lucide-react';
+import { CalendarDays, LayoutList, Calendar, BarChart3, PieChart } from 'lucide-react';
 
 const views: { id: ViewMode; label: string; icon: React.ReactNode }[] = [
   { id: 'tasks', label: 'Tasks', icon: <LayoutList size={16} /> },
   { id: 'daily', label: 'Daily', icon: <CalendarDays size={16} /> },
   { id: 'monthly', label: 'Monthly', icon: <Calendar size={16} /> },
   { id: 'yearly', label: 'Yearly', icon: <BarChart3 size={16} /> },
+  { id: 'analytics', label: 'Analytics', icon: <PieChart size={16} /> },
 ];
 
 interface DashboardHeaderProps {
