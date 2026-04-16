@@ -2,7 +2,7 @@ import React from 'react';
 import { useTasks } from '@/contexts/TaskContext';
 import { format } from 'date-fns';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { CATEGORY_COLORS, TaskCategory } from '@/types/task';
+import { CATEGORY_CONFIG, TaskCategory } from '@/types/task';
 
 interface SummaryChartProps {
   selectedDate: Date;
@@ -14,11 +14,8 @@ const SummaryChart: React.FC<SummaryChartProps> = ({ selectedDate }) => {
   const monthTasks = tasks.filter(t => t.date.startsWith(monthStr));
 
   const categoryData = Object.entries(
-    monthTasks.reduce<Record<string, number>>((acc, t) => {
-      acc[t.category] = (acc[t.category] || 0) + 1;
-      return acc;
-    }, {})
-  ).map(([name, value]) => ({ name, value, color: CATEGORY_COLORS[name as TaskCategory] }));
+    monthTasks.reduce<Record<string, number>>((acc, t) => { acc[t.category] = (acc[t.category] || 0) + 1; return acc; }, {})
+  ).map(([name, value]) => ({ name, value, color: CATEGORY_CONFIG[name as TaskCategory].color }));
 
   if (categoryData.length === 0) {
     return (
@@ -37,14 +34,7 @@ const SummaryChart: React.FC<SummaryChartProps> = ({ selectedDate }) => {
           <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} innerRadius={45}>
             {categoryData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
           </Pie>
-          <Tooltip
-            contentStyle={{
-              backgroundColor: 'hsl(var(--card))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '0.5rem',
-              fontSize: '0.85rem',
-            }}
-          />
+          <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '0.5rem', fontSize: '0.85rem' }} />
         </PieChart>
       </ResponsiveContainer>
       <div className="flex flex-wrap justify-center gap-3 mt-2">
