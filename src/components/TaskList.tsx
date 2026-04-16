@@ -8,7 +8,7 @@ interface TaskListProps {
 }
 
 const TaskList: React.FC<TaskListProps> = ({ selectedDate }) => {
-  const { tasks, toggleComplete, deleteTask, startTimer, pauseTimer, stopTimer } = useTasks();
+  const { tasks, toggleComplete, deleteTask, startTimer, pauseTimer, stopTimer, updateTask } = useTasks();
   const dateStr = format(selectedDate, 'yyyy-MM-dd');
   const dayTasks = tasks.filter(t => t.date === dateStr).sort((a, b) => a.plannedStart.localeCompare(b.plannedStart));
   const pendingTasks = dayTasks.filter(t => !t.completed);
@@ -46,6 +46,7 @@ const TaskList: React.FC<TaskListProps> = ({ selectedDate }) => {
                 onStart={startTimer}
                 onPause={pauseTimer}
                 onStop={stopTimer}
+                onUpdate={updateTask}
               />
             ))}
           </div>
@@ -73,6 +74,7 @@ const TaskList: React.FC<TaskListProps> = ({ selectedDate }) => {
                 onStart={startTimer}
                 onPause={pauseTimer}
                 onStop={stopTimer}
+                onUpdate={updateTask}
               />
             ))}
           </div>

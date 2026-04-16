@@ -1,27 +1,56 @@
 import React from 'react';
 import { useTasks } from '@/contexts/TaskContext';
-import { format } from 'date-fns';
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval } from 'date-fns';
 import { Target, CheckCircle2, Clock, TrendingUp } from 'lucide-react';
-import { getPlannedMinutes, getActualMinutes, formatDuration } from '@/types/task';
+import { getPlannedMinutes, getActualMinutes, formatDuration, ViewMode } from '@/types/task';
 
 interface MetricsPanelProps {
   selectedDate: Date;
+  activeView: ViewMode;
 }
 
-const MetricsPanel: React.FC<MetricsPanelProps> = ({ selectedDate }) => {
+const MetricsPanel: React.FC<MetricsPanelProps> = ({ selectedDate, activeView }) => {
   const { tasks } = useTasks();
-  const dateStr = format(selectedDate, 'yyyy-MM-dd');
-  const dayTasks = tasks.filter(t => t.date === dateStr);
-  const total = dayTasks.length;
-  const completed = dayTasks.filter(t => t.completed).length;
-  const totalPlanned = dayTasks.reduce((s, t) => s + getPlannedMinutes(t), 0);
-  const totalActual = dayTasks.reduce((s, t) => s + getActualMinutes(t), 0);
+  
+  const getFilteredTasks = () => {
+    if (activeView === 'tasks' || activeView === 'daily') {
+      const dateStr = format(selectedDate, 'yyyy-MM-dd');
+      return tasks.filter(t => t.date === dateStr);
+    }
+    
+    let start: Date, end: Date;
+    
+    if (activeView === 'weekly') {
+      start = startOfWeek(selectedDate, { weekStartsOn: 1 });
+      end = endOfWeek(selectedDate, { weekStartsOn: 1 });
+    } else if (activeView === 'monthly') {
+      start = startOfMonth(selectedDate);
+      end = endOfMonth(selectedDate);
+    } else if (activeView === 'yearly') {
+      start = startOfYear(selectedDate);
+      end = endOfYear(selectedDate);
+    } else {
+      // Analytics or other: show all tasks for current selection context
+      return tasks;
+    }
+
+    return tasks.filter(t => {
+      const taskDate = new Date(t.date);
+      return isWithinInterval(taskDate, { start, end });
+    });
+  };
+
+  const filteredTasks = getFilteredTasks();
+  const total = filteredTasks.length;
+  const completed = filteredTasks.filter(t => t.completed).length;
+  const totalPlanned = filteredTasks.reduce((s, t) => s + getPlannedMinutes(t), 0);
+  const totalActual = filteredTasks.reduce((s, t) => s + getActualMinutes(t), 0);
 
   // Productivity score: weighted by completion, priority, and time accuracy
   const score = total === 0 ? 0 : Math.min(100, Math.round(
     (completed / total) * 60 +
     (totalPlanned > 0 ? Math.max(0, 1 - Math.abs(totalActual - totalPlanned) / totalPlanned) * 25 : 25) +
-    (dayTasks.filter(t => t.completed && t.priority === 'important').length / Math.max(1, dayTasks.filter(t => t.priority === 'important').length)) * 15
+    (filteredTasks.filter(t => t.completed && t.priority === 'important').length / Math.max(1, filteredTasks.filter(t => t.priority === 'important').length)) * 15
   ));
 
   const metrics = [

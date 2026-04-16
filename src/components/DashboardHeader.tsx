@@ -2,7 +2,7 @@ import React from 'react';
 import { useTasks } from '@/contexts/TaskContext';
 import { ViewMode } from '@/types/task';
 import { CalendarDays, LayoutList, Calendar, BarChart3, PieChart, Cloud, CloudOff, LoaderCircle, Clock } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 
 const views: { id: ViewMode; label: string; icon: React.ReactNode }[] = [
   { id: 'tasks', label: 'Tasks', icon: <LayoutList size={16} /> },
@@ -56,7 +56,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ activeView, onViewCha
         <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
           <input
             type="date"
-            value={selectedDate.toISOString().split('T')[0]}
+            value={format(selectedDate, 'yyyy-MM-dd')}
             onChange={e => onDateChange(new Date(e.target.value + 'T00:00:00'))}
             className="bg-secondary text-secondary-foreground text-sm rounded-lg px-3 py-2 border border-border/70 outline-none focus:ring-2 focus:ring-primary/50"
           />

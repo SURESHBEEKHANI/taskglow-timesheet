@@ -7,6 +7,7 @@ export interface Task {
   id: string;
   date: string;
   name: string;
+  description: string;
   category: TaskCategory;
   priority: TaskPriority;
   urgency: TaskUrgency;

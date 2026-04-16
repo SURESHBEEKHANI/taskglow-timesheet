@@ -15,6 +15,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ selectedDate }) => {
     startTimer,
     pauseTimer,
     stopTimer,
+    updateTask,
   } = useTasks();
 
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 });
@@ -68,6 +69,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ selectedDate }) => {
                     onStart={startTimer}
                     onPause={pauseTimer}
                     onStop={stopTimer}
+                    onUpdate={updateTask}
                   />
                 ))}
               </div>
@@ -95,6 +97,7 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ selectedDate }) => {
                     onStart={startTimer}
                     onPause={pauseTimer}
                     onStop={stopTimer}
+                    onUpdate={updateTask}
                   />
                 ))}
               </div>

@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import TaskRow from '@/components/TaskRow';
 
 const MonthlyTaskList: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => {
-  const { tasks, toggleComplete, deleteTask, startTimer, pauseTimer, stopTimer } = useTasks();
+  const { tasks, toggleComplete, deleteTask, startTimer, pauseTimer, stopTimer, updateTask } = useTasks();
 
   const monthStr = format(selectedDate, 'yyyy-MM');
   const monthTasks = tasks
@@ -47,6 +47,7 @@ const MonthlyTaskList: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => 
                 onStart={startTimer}
                 onPause={pauseTimer}
                 onStop={stopTimer}
+                onUpdate={updateTask}
               />
             ))}
           </div>
@@ -72,6 +73,7 @@ const MonthlyTaskList: React.FC<{ selectedDate: Date }> = ({ selectedDate }) => 
                 onStart={startTimer}
                 onPause={pauseTimer}
                 onStop={stopTimer}
+                onUpdate={updateTask}
               />
             ))}
           </div>
