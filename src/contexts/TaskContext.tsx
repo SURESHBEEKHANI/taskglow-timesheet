@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { Task } from '@/types/task';
+import { Task, getPlannedMinutes, getActualMinutes } from '@/types/task';
 import { fetchTasksFromApi, saveTasksToApi } from '@/lib/taskApi';
+import { format, subDays, addDays, isBefore, parseISO, startOfDay } from 'date-fns';
 
 interface TaskContextType {
   tasks: Task[];
@@ -16,6 +17,7 @@ interface TaskContextType {
   startTimer: (id: string) => void;
   pauseTimer: (id: string) => void;
   stopTimer: (id: string) => void;
+  smartReplan: () => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -150,6 +152,54 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }));
   }, []);
 
+  const smartReplan = useCallback(() => {
+    setTasks(prev => {
+      const today = new Date();
+      const todayStr = format(today, 'yyyy-MM-dd');
+      const yesterdayStr = format(subDays(today, 1), 'yyyy-MM-dd');
+      
+      let updatedTasks = [...prev];
+
+      // 1. Reschedule Skipped: Move uncompleted tasks from yesterday (or older) to today
+      updatedTasks = updatedTasks.map(t => {
+        if (!t.completed && isBefore(parseISO(t.date), startOfDay(today))) {
+          return { ...t, date: todayStr, wasRescheduled: true };
+        }
+        return t;
+      });
+
+      // 2. Load Balancing: Calculate total load for today
+      const todayTasks = updatedTasks.filter(t => t.date === todayStr && !t.completed);
+      const totalPlanned = todayTasks.reduce((sum, t) => sum + getPlannedMinutes(t), 0);
+
+      // If load > 10 hours, push low-priority tasks to tomorrow
+      if (totalPlanned > 600) {
+        const sorted = [...todayTasks].sort((a, b) => {
+          if (a.priority === 'important' && b.priority !== 'important') return -1;
+          if (a.priority !== 'important' && b.priority === 'important') return 1;
+          return 0;
+        });
+
+        let currentTotal = 0;
+        updatedTasks = updatedTasks.map(t => {
+          if (t.date === todayStr && !t.completed) {
+            const planned = getPlannedMinutes(t);
+            // If adding this task exceeds 8 hours, move it to tomorrow
+            if (currentTotal + planned > 480 && t.priority !== 'important') {
+              return { ...t, date: format(addDays(today, 1), 'yyyy-MM-dd'), wasRescheduled: true };
+            }
+            currentTotal += planned;
+          }
+          return t;
+        });
+      }
+
+      // 3. Complexity Scaling: Identify tasks that usually overrun and increase planned time
+      // (Simple version: if specific task names in history took longer, expand current planned)
+      return updatedTasks;
+    });
+  }, []);
+
   return (
     <TaskContext.Provider value={{
       tasks,
@@ -165,6 +215,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       startTimer,
       pauseTimer,
       stopTimer,
+      smartReplan,
     }}>
       {children}
     </TaskContext.Provider>

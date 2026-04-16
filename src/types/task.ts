@@ -20,6 +20,7 @@ export interface Task {
   timerElapsed: number; // seconds accumulated
   timerStartedAt: number | null; // timestamp when timer last started
   createdAt: string;
+  wasRescheduled?: boolean;
 }
 
 export type ViewMode = 'tasks' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'analytics';

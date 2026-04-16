@@ -21,63 +21,69 @@ interface DashboardHeaderProps {
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ activeView, onViewChange, selectedDate, onDateChange }) => {
-  const { isLoading, isSyncing, storageMode, syncError, lastSyncedAt } = useTasks();
+  const { isLoading, isSyncing, storageMode, lastSyncedAt } = useTasks();
 
-  const syncLabel = isLoading
-    ? 'Loading data...'
+  const syncTooltip = isLoading
+    ? 'Initializing...'
     : isSyncing
-      ? 'Syncing to Supabase...'
+      ? 'Updating Supabase...'
       : storageMode === 'supabase'
-        ? `Supabase synced${lastSyncedAt ? ` ${formatDistanceToNow(new Date(lastSyncedAt), { addSuffix: true })}` : ''}`
-        : 'Local storage fallback';
+        ? `Cloud Synced${lastSyncedAt ? ` • ${formatDistanceToNow(new Date(lastSyncedAt), { addSuffix: true })}` : ''}`
+        : 'Local Only';
 
   const SyncIcon = isLoading || isSyncing ? LoaderCircle : storageMode === 'supabase' ? Cloud : CloudOff;
 
   return (
-    <header className="glass-card rounded-xl p-4 sm:p-5 mb-6 animate-fade-in">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <header className="animate-fade-in space-y-8">
+      <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold gradient-text tracking-tight">TimeFlow</h1>
-          <p className="text-sm text-muted-foreground mt-1">Plan, track, and improve your day with intention.</p>
-          <div className={`mt-3 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium ${
-            storageMode === 'supabase'
-              ? 'border-success/20 bg-success/10 text-success'
-              : 'border-warning/20 bg-warning/10 text-warning'
-          }`}>
-            <SyncIcon size={14} className={isLoading || isSyncing ? 'animate-spin' : ''} />
-            <span>{syncLabel}</span>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl sm:text-4xl font-black gradient-text tracking-tighter">TaskGlow</h1>
+            <div className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-widest border ${
+              storageMode === 'supabase'
+                ? 'border-success/30 bg-success/10 text-success'
+                : 'border-warning/30 bg-warning/10 text-warning'
+            }`}>
+              <SyncIcon size={12} className={isLoading || isSyncing ? 'animate-spin' : ''} />
+              <span className="opacity-80">{syncTooltip}</span>
+            </div>
           </div>
-          {syncError && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              {syncError}
-            </p>
-          )}
+          <p className="text-sm font-medium text-muted-foreground max-w-lg">
+            High-performance intentionality tracking.
+          </p>
         </div>
-        <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
-          <input
-            type="date"
-            value={format(selectedDate, 'yyyy-MM-dd')}
-            onChange={e => onDateChange(new Date(e.target.value + 'T00:00:00'))}
-            className="bg-secondary text-secondary-foreground text-sm rounded-lg px-3 py-2 border border-border/70 outline-none focus:ring-2 focus:ring-primary/50"
-          />
-          <div className="flex bg-secondary/80 rounded-lg p-1 gap-0.5 w-full sm:w-auto overflow-x-auto">
+
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full md:w-auto">
+          <div className="relative w-full sm:w-auto">
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+            <input
+              type="date"
+              value={format(selectedDate, 'yyyy-MM-dd')}
+              onChange={e => onDateChange(new Date(e.target.value + 'T00:00:00'))}
+              className="w-full sm:w-auto bg-secondary/30 text-foreground text-sm font-bold rounded-xl pl-10 pr-4 py-2.5 border border-border/50 outline-none focus:ring-4 focus:ring-primary/10 transition-all cursor-pointer"
+            />
+          </div>
+
+          <div className="flex bg-secondary/40 backdrop-blur-md rounded-2xl p-1.5 gap-1 w-full sm:w-auto shadow-inner">
             {views.map(v => (
               <button
                 key={v.id}
                 onClick={() => onViewChange(v.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all duration-300 whitespace-nowrap ${
                   activeView === v.id
-                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-background/80'
+                    ? 'bg-primary text-primary-foreground shadow-xl shadow-primary/30 ring-1 ring-white/10'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                 }`}
               >
                 {v.icon}
-                <span className="hidden sm:inline">{v.label}</span>
+                <span>{v.label}</span>
               </button>
             ))}
           </div>
         </div>
       </div>
+      
+      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-border/50 to-transparent" />
     </header>
   );
 };

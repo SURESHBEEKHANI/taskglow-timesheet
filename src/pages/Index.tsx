@@ -14,6 +14,9 @@ import SummaryChart from '@/components/SummaryChart';
 import EisenhowerMatrix from '@/components/EisenhowerMatrix';
 import PomodoroTimer from '@/components/PomodoroTimer';
 import AIInsights from '@/components/AIInsights';
+import ProductivityScore from '@/components/ProductivityScore';
+import BurnoutAlert from '@/components/BurnoutAlert';
+import FocusMetrics from '@/components/FocusMetrics';
 
 const Dashboard: React.FC = () => {
   const [activeView, setActiveView] = useState<ViewMode>('tasks');
@@ -35,9 +38,12 @@ const Dashboard: React.FC = () => {
         <div className="mt-10 grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8">
           <div className="space-y-8">
             {activeView !== 'analytics' && (
-              <div className="glass-card rounded-2xl p-1">
-                <TaskForm selectedDate={selectedDate} />
-              </div>
+              <>
+                <div className="glass-card rounded-2xl p-1">
+                  <TaskForm selectedDate={selectedDate} />
+                </div>
+                <FocusMetrics selectedDate={selectedDate} />
+              </>
             )}
 
             <main className="animate-fade-in min-h-[400px]">
@@ -51,6 +57,9 @@ const Dashboard: React.FC = () => {
           </div>
 
           <aside className="space-y-8 h-fit lg:sticky lg:top-8">
+            <ProductivityScore selectedDate={selectedDate} />
+            <BurnoutAlert />
+            
             <div className="glass-card-hover rounded-2xl p-6">
               <PomodoroTimer />
             </div>
