@@ -2,6 +2,7 @@ import React from 'react';
 import { useTasks } from '@/contexts/TaskContext';
 import { format } from 'date-fns';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { BarChart3 } from 'lucide-react';
 import { CATEGORY_CONFIG, TaskCategory } from '@/types/task';
 
 interface SummaryChartProps {

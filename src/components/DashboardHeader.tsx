@@ -39,14 +39,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ activeView, onViewCha
         <div>
           <div className="flex items-center gap-3 mb-2">
             <h1 className="text-3xl sm:text-4xl font-black gradient-text tracking-tighter">TaskGlow</h1>
-            <div className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-widest border ${
-              storageMode === 'supabase'
-                ? 'border-success/30 bg-success/10 text-success'
-                : 'border-warning/30 bg-warning/10 text-warning'
-            }`}>
-              <SyncIcon size={12} className={isLoading || isSyncing ? 'animate-spin' : ''} />
-              <span className="opacity-80">{syncTooltip}</span>
-            </div>
           </div>
           <p className="text-sm font-medium text-muted-foreground max-w-lg">
             High-performance intentionality tracking.

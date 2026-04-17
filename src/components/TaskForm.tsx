@@ -10,7 +10,7 @@ interface TaskFormProps {
 
 const TaskForm: React.FC<TaskFormProps> = ({ selectedDate }) => {
   const { addTask } = useTasks();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -28,6 +28,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ selectedDate }) => {
     if (!form.name.trim()) return;
     addTask({ ...form, date: format(selectedDate, 'yyyy-MM-dd') });
     setForm({ name: '', description: '', category: 'work', priority: 'important', urgency: 'urgent', plannedStart: '09:00', plannedEnd: '10:00', actualStart: '', actualEnd: '' });
+    setOpen(false);
   };
 
   if (!open) {
